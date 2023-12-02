@@ -4,10 +4,8 @@ use std::path::Path;
 
 fn calc_power_lines(filename: &Path) -> usize {
     let mut power = 0;
-    let mut linenum = 0;
     for line in read_to_string(filename).unwrap().lines() {
-        linenum += 1;
-        let data = parse_line(linenum, line);
+        let data = parse_line(line);
         let mut cnt: HashMap<&String, usize> = HashMap::new();
         for map in &data {
             for (k, v) in map.iter() {
@@ -25,7 +23,7 @@ fn count_valid_lines(filename: &Path) -> usize {
     'lineloop:
     for line in read_to_string(filename).unwrap().lines() {
         linenum += 1;
-        let data = parse_line(linenum, line);
+        let data = parse_line(line);
         for map in data {
             for (k, v) in map.iter() {
                 match k.as_str() {
@@ -41,10 +39,10 @@ fn count_valid_lines(filename: &Path) -> usize {
     valid
 }
 
-fn parse_line(idx: usize, line: &str) -> Vec<HashMap<String, usize>> {
+fn parse_line(line: &str) -> Vec<HashMap<String, usize>> {
     let mut result_vec = vec![];
     let pat = regex::Regex::new("^\\s*(\\d+)\\s+(\\w+)\\s*$").unwrap();
-    let start = 7 + format!("{}", idx).len();
+    let start = line.find(':').unwrap()+2;
     let data = &line[start..];
     for seg in data.split(';') {
         let mut data = HashMap::new();
