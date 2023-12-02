@@ -20,18 +20,20 @@ fn calc_power_lines(filename: &Path) -> usize {
 fn count_valid_lines(filename: &Path) -> usize {
     let mut linenum = 0;
     let mut valid = 0;
+    let valid_data = HashMap::from(
+        [
+            ("red", 12),
+            ("green", 13),
+            ("blue", 14)
+        ]
+    );
     'lineloop:
     for line in read_to_string(filename).unwrap().lines() {
         linenum += 1;
         let data = parse_line(line);
         for map in data {
             for (k, v) in map.iter() {
-                match k.as_str() {
-                    "red" => if v > &12 { continue 'lineloop; }
-                    "blue" => if v > &14 { continue 'lineloop; }
-                    "green" => if v > &13 { continue 'lineloop; }
-                    _ => { assert!(false); }
-                }
+                if v > valid_data.get(k.as_str()).unwrap() { continue 'lineloop; }
             }
         }
         valid += linenum;
@@ -42,7 +44,7 @@ fn count_valid_lines(filename: &Path) -> usize {
 fn parse_line(line: &str) -> Vec<HashMap<String, usize>> {
     let mut result_vec = vec![];
     let pat = regex::Regex::new("^\\s*(\\d+)\\s+(\\w+)\\s*$").unwrap();
-    let start = line.find(':').unwrap()+2;
+    let start = line.find(':').unwrap() + 2;
     let data = &line[start..];
     for seg in data.split(';') {
         let mut data = HashMap::new();
