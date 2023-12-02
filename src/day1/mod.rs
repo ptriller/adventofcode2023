@@ -68,13 +68,13 @@ mod tests {
     fn do_problem1() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day1/data1.txt");
-        println!("Result: {}", process_file(test_data.as_path()))
+        println!("Day 1, Problem 1: Result: {}", process_file(test_data.as_path()))
     }
 
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day1/data1.txt");
-        println!("Result: {}", process_extended_file(test_data.as_path()))
+        println!("Day , Problem 2: Result: {}", process_extended_file(test_data.as_path()))
     }
 }
