@@ -1,7 +1,7 @@
 use std::fs::read_to_string;
 use std::path::Path;
 
-fn extract_numner(line: &str) -> u32 {
+fn extract_number(line: &str) -> u32 {
     let mut first = None;
     let mut last = None;
     for c in line.chars() {
@@ -15,17 +15,17 @@ fn extract_numner(line: &str) -> u32 {
     first.unwrap() * 10 + last.unwrap()
 }
 
-
+const NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const DIGITS: [&str; 9] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 fn extract_extended_number(line: &str) -> u32 {
-    let numbers: Vec<&str> = vec!["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    let digits: Vec<&str> = vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 
     let mut first = None;
     let mut last = None;
     for i in 0..line.len() {
         let curr = &line[i..];
         for j in 0..9 {
-            if curr.starts_with(numbers[j]) || curr.starts_with(digits[j]) {
+            if curr.starts_with(NUMBERS[j]) || curr.starts_with(DIGITS[j]) {
                 let val = j as u32 + 1;
                 if first.is_none() {
                     first = Some(val)
@@ -40,7 +40,7 @@ fn extract_extended_number(line: &str) -> u32 {
 fn process_file(filename: &Path) -> u32 {
     let mut result = 0;
     for line in read_to_string(filename).unwrap().lines() {
-        let num = extract_numner(line);
+        let num = extract_number(line);
         assert_ne!(0, num);
         result += num;
     }
