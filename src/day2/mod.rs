@@ -25,14 +25,14 @@ fn count_valid_lines(filename: &Path) -> usize {
         ("blue", 14)
     ]);
     'lineloop:
-    for (linenum, line) in read_to_string(filename).unwrap().lines().enumerate() {
+    for (line, linenum ) in read_to_string(filename).unwrap().lines().zip(1..) {
         let data = parse_line(line);
         for map in data {
             for (k, v) in map.iter() {
                 if v > valid_data.get(k.as_str()).unwrap() { continue 'lineloop; }
             }
         }
-        valid += linenum + 1;
+        valid += linenum;
     }
     valid
 }
