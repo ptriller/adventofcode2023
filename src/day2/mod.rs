@@ -8,18 +8,13 @@ fn calc_power_lines(filename: &Path) -> usize {
     for line in read_to_string(filename).unwrap().lines() {
         linenum += 1;
         let data = parse_line(linenum, line);
-        let (mut r, mut g, mut b) = (0, 0, 0);
-        for map in data {
+        let mut cnt: HashMap<&String, usize> = HashMap::new();
+        for map in &data {
             for (k, v) in map.iter() {
-                match k.as_str() {
-                    "red" => r = r.max(*v),
-                    "blue" => b = b.max(*v),
-                    "green" => g = g.max(*v),
-                    _ => { assert!(false); }
-                }
+                cnt.entry(k).and_modify(|i| *i = *v.max(i)).or_insert(*v);
             }
         }
-        power += r * g * b;
+        power += cnt.values().fold(1, |a, b| a * b);
     }
     power
 }
