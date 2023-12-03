@@ -27,18 +27,17 @@ fn calc_gear_ratios(path: &Path) -> u32 {
 }
 
 fn search_row(data: &Vec<&str>, numbers: &mut Vec<u32>, colnum: usize, row: usize) {
-    let top = fetch_num(&data, row, colnum);
-    if let Some((tn, _)) = top {
-        numbers.push(tn);
+    if let Some((center, _)) =  fetch_num(&data, row, colnum) {
+        numbers.push(center);
     } else {
         if colnum > 0 {
-            if let Some((tl, _)) = fetch_num(&data, row, colnum - 1) {
-                numbers.push(tl);
+            if let Some((left, _)) = fetch_num(&data, row, colnum - 1) {
+                numbers.push(left);
             }
         }
         if colnum + 1 < data[row].len() {
-            if let Some((tr, _)) = fetch_num(&data, row, colnum + 1) {
-                numbers.push(tr);
+            if let Some((right, _)) = fetch_num(&data, row, colnum + 1) {
+                numbers.push(right);
             }
         }
     }
