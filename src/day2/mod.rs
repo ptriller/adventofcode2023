@@ -62,14 +62,14 @@ mod tests {
     #[test]
     fn do_problem1() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        test_data.push("resources/day2/data1.txt");
+        test_data.push("resources/day2/input.txt");
         println!("Day 2, Problem 1: Valid games: {}", count_valid_lines(test_data.as_path()));
     }
 
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        test_data.push("resources/day2/data1.txt");
+        test_data.push("resources/day2/input.txt");
         println!("Day 2, Problem 2: Power of games: {}", calc_power_lines(test_data.as_path()));
     }
 }
