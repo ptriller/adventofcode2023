@@ -26,8 +26,11 @@ fn calc_gear_ratios(path: &Path) -> u32 {
     result
 }
 
+/**
+ * Could be nicer ... but the cancel after center makes it awkward.
+ */
 fn search_row(data: &Vec<&str>, numbers: &mut Vec<u32>, colnum: usize, row: usize) {
-    if let Some((center, _)) =  fetch_num(&data, row, colnum) {
+    if let Some((center, _)) = fetch_num(&data, row, colnum) {
         numbers.push(center);
     } else {
         if colnum > 0 {
