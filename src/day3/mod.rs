@@ -1,8 +1,5 @@
 use std::fs::read_to_string;
-use std::iter::Enumerate;
 use std::path::Path;
-use std::str::{Chars};
-
 
 fn calc_gear_ratios(path: &Path) -> u32 {
     let test_data = read_to_string(path).unwrap();
@@ -47,19 +44,6 @@ fn search_row(data: &Vec<&str>, numbers: &mut Vec<u32>, colnum: usize, row: usiz
     }
 }
 
-fn fetch_num(data: &Vec<&str>, rownum: usize, col: usize) -> Option<(u32, usize)> {
-    let row = data[rownum].as_bytes();
-    if !row[col].is_ascii_digit() { return None; }
-    let mut lcol = col;
-    while lcol > 0 && row[lcol - 1].is_ascii_digit() { lcol -= 1; }
-    let mut result = 0u32;
-    while lcol < row.len() && row[lcol].is_ascii_digit() {
-        result = result * 10 + (row[lcol] - '0' as u8) as u32;
-        lcol += 1;
-    }
-    Some((result, lcol))
-}
-
 fn calc_serial_number(path: &Path) -> u32 {
     let mut result = 0;
     let test_data = read_to_string(path).unwrap();
@@ -82,9 +66,19 @@ fn calc_serial_number(path: &Path) -> u32 {
     result
 }
 
-fn is_symbol(chr: char) -> bool {
-    chr != '.' && !chr.is_ascii_digit()
+fn fetch_num(data: &Vec<&str>, rownum: usize, col: usize) -> Option<(u32, usize)> {
+    let row = data[rownum].as_bytes();
+    if !row[col].is_ascii_digit() { return None; }
+    let mut lcol = col;
+    while lcol > 0 && row[lcol - 1].is_ascii_digit() { lcol -= 1; }
+    let mut result = 0u32;
+    while lcol < row.len() && row[lcol].is_ascii_digit() {
+        result = result * 10 + (row[lcol] - '0' as u8) as u32;
+        lcol += 1;
+    }
+    Some((result, lcol))
 }
+
 
 fn is_serial(data: &Vec<&str>, row: usize, col: usize, length: usize) -> bool {
     let from = 0i32.max(col as i32 - 1) as usize;
@@ -102,20 +96,14 @@ fn is_serial(data: &Vec<&str>, row: usize, col: usize, length: usize) -> bool {
     false
 }
 
-fn get_mumber(num: &mut u32, it: &mut Enumerate<Chars>) -> usize {
-    let mut length = 1;
-    while let Some((_, chr)) = it.next() {
-        if !chr.is_ascii_digit() { break; }
-        length += 1;
-        *num = *num * 10 + chr.to_digit(10).unwrap();
-    }
-    length
+fn is_symbol(chr: char) -> bool {
+    chr != '.' && !chr.is_ascii_digit()
 }
-
 
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
+
     use crate::day3::{calc_gear_ratios, calc_serial_number};
 
     #[test]
