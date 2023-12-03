@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::iter::Enumerate;
 use std::path::Path;
@@ -6,80 +5,60 @@ use std::str::{Chars};
 
 
 fn calc_gear_ratios(path: &Path) -> u32 {
-    let mut gears: HashMap<(usize, usize), Vec<u32>> = HashMap::new();
     let test_data = read_to_string(path).unwrap();
     let data: Vec<&str> = test_data.lines().collect();
-    for (row, line) in data.iter().enumerate() {
-        let mut it = line.chars().enumerate();
-        while let Some((col, chr)) = it.next() {
-            if chr.is_ascii_digit() {
-                let mut num = chr.to_digit(10).unwrap();
-                let length = get_mumber(&mut num, &mut it);
-                GearChecker::check(&mut gears, &data, row, col, length, num);
-            }
-        }
-    }
     let mut result = 0;
-    for (_k, v) in &gears {
-        if v.len() == 2 {
-            result += v.iter().product::<u32>();
+    for rownum in 0..data.len() {
+        let row = data[rownum].as_bytes();
+        for colnum in 0..row.len() {
+            if row[colnum] == '*' as u8 {
+                let mut numbers = vec![];
+                if rownum > 0 {
+                    search_row(&data, &mut numbers, colnum, rownum - 1);
+                }
+                search_row(&data, &mut numbers, colnum, rownum);
+                if rownum + 1 < data.len() {
+                    search_row(&data, &mut numbers, colnum, rownum + 1);
+                }
+                if numbers.len() == 2 {
+                    result += numbers.iter().product::<u32>();
+                }
+            }
         }
     }
     result
 }
 
-struct GearChecker<'life> {
-    gears: &'life mut HashMap<(usize, usize), Vec<u32>>,
-    data: &'life Vec<&'life str>,
-    row: usize,
-    col: usize,
-    length: usize,
-    value: u32,
-}
-
-
-impl GearChecker<'_> {
-    fn check(gears: &mut HashMap<(usize, usize), Vec<u32>>,
-             data: &Vec<&str>,
-             row: usize,
-             col: usize,
-             length: usize,
-             value: u32) {
-        GearChecker {
-            gears,
-            data,
-            row,
-            col,
-            length,
-            value,
-        }.register_gears()
-    }
-
-    fn check_char(&mut self, chr: char, pos: (usize, usize)) {
-        if chr == '*' {
-            self.gears.entry(pos)
-                .and_modify(|v| v.push(self.value))
-                .or_insert(vec![self.value]);
-        }
-    }
-    fn register_gears(&mut self) {
-        let from = 0i32.max(self.col as i32 - 1) as usize;
-        let to = (self.data[0].len() - 1).min(self.col + self.length);
-        if self.row > 0 {
-            for (col, chr) in (from..=to).zip(&mut self.data[self.row - 1][from..=to].chars()) {
-                self.check_char(chr, (self.row - 1, col));
+fn search_row(data: &Vec<&str>, numbers: &mut Vec<u32>, colnum: usize, row: usize) {
+    let top = fetch_num(&data, row, colnum);
+    if let Some(tn) = top {
+        numbers.push(tn);
+    } else {
+        if colnum > 0 {
+            if let Some(tl) = fetch_num(&data, row, colnum - 1) {
+                numbers.push(tl);
             }
         }
-        self.check_char(self.data[self.row].chars().nth(from).unwrap(), (self.row, from));
-        self.check_char(self.data[self.row].chars().nth(to).unwrap(), (self.row, to));
-        if self.row + 1 < self.data.len() {
-            for (col, chr) in (from..=to).zip(&mut self.data[self.row + 1][from..=to].chars()) {
-                self.check_char(chr, (self.row + 1, col));
+        if colnum + 1 < data[row].len() {
+            if let Some(tr) = fetch_num(&data, row, colnum + 1) {
+                numbers.push(tr);
             }
         }
     }
 }
 
+fn fetch_num(data: &Vec<&str>, rownum: usize, col: usize) -> Option<u32> {
+    let row = data[rownum].as_bytes();
+    if !row[col].is_ascii_digit() { return None; }
+    let mut lcol = col;
+    while lcol > 0 && row[lcol - 1].is_ascii_digit() { lcol -= 1; }
+    let mut result = 0u32;
+    while row[lcol].is_ascii_digit() {
+        result = result * 10 + (row[lcol] - '0' as u8) as u32;
+        lcol += 1;
+    }
+    Some(result)
+}
 
 fn calc_serial_number(path: &Path) -> u32 {
     let mut result = 0;

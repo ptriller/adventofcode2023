@@ -18,8 +18,6 @@ fn extract_number(line: &str) -> u32 {
 const NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 const DIGITS: [&str; 9] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 fn extract_extended_number(line: &str) -> u32 {
-
-
     let mut first = None;
     let mut last = None;
     for i in 0..line.len() {
