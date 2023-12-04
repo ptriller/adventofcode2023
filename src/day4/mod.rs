@@ -18,7 +18,7 @@ fn calc_winning_points(path: &Path) -> u32 {
 }
 
 
-fn calc_real_winning_points(path: &Path) -> u32 {
+fn calc_scratchcards(path: &Path) -> u32 {
     let cards: Vec<Card> = read_to_string(path).unwrap().lines()
         .map(parse_card)
         .collect();
@@ -44,11 +44,11 @@ fn parse_card(line: &str) -> Card {
     let num: u32 = line[5..delim].trim().parse().unwrap();
     let splitter = line.find('|').unwrap();
     let winners: HashSet<u32> = line[1 + delim..splitter].split(' ')
-        .filter(|d| d.is_empty())
+        .filter(|d| !d.is_empty())
         .map(|d| d.parse::<u32>().unwrap())
         .collect();
     let getters: HashSet<u32> = line[1 + splitter..].split(' ')
-        .filter(|d| d.is_empty())
+        .filter(|d| !d.is_empty())
         .map(|d| d.parse::<u32>().unwrap())
         .collect();
     Card {
@@ -75,6 +75,6 @@ mod tests {
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day4/input.txt");
-        println!("Day 4, Problem 1: Scratchcards: {}", calc_real_winning_points(test_data.as_path()));
+        println!("Day 4, Problem 1: Scratchcards: {}", calc_scratchcards(test_data.as_path()));
     }
 }
