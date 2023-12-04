@@ -17,6 +17,7 @@ fn calc_winning_points(path: &Path) -> u32 {
         .sum()
 }
 
+
 fn calc_real_winning_points(path: &Path) -> u32 {
     let cards: Vec<Card> = read_to_string(path).unwrap().lines()
         .map(parse_card)
@@ -43,11 +44,11 @@ fn parse_card(line: &str) -> Card {
     let num: u32 = line[5..delim].trim().parse().unwrap();
     let splitter = line.find('|').unwrap();
     let winners: HashSet<u32> = line[1 + delim..splitter].split(' ')
-        .filter(|d| d.len() > 0)
+        .filter(|d| d.is_empty())
         .map(|d| d.parse::<u32>().unwrap())
         .collect();
     let getters: HashSet<u32> = line[1 + splitter..].split(' ')
-        .filter(|d| d.len() > 0)
+        .filter(|d| d.is_empty())
         .map(|d| d.parse::<u32>().unwrap())
         .collect();
     Card {

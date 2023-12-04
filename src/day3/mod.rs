@@ -7,8 +7,8 @@ fn calc_gear_ratios(path: &Path) -> u32 {
     let mut result = 0;
     for rownum in 0..data.len() {
         let row = data[rownum].as_bytes();
-        for colnum in 0..row.len() {
-            if row[colnum] == '*' as u8 {
+        for (colnum, chr) in row.iter().enumerate() {
+            if *chr == b'*' {
                 let mut numbers = vec![];
                 if rownum > 0 {
                     search_row(&data, &mut numbers, colnum, rownum - 1);
@@ -29,17 +29,17 @@ fn calc_gear_ratios(path: &Path) -> u32 {
 /**
  * Could be nicer ... but the cancel after center makes it awkward.
  */
-fn search_row(data: &Vec<&str>, numbers: &mut Vec<u32>, colnum: usize, row: usize) {
-    if let Some((center, _)) = fetch_num(&data, row, colnum) {
+fn search_row(data: &[&str], numbers: &mut Vec<u32>, colnum: usize, row: usize) {
+    if let Some((center, _)) = fetch_num(data, row, colnum) {
         numbers.push(center);
     } else {
         if colnum > 0 {
-            if let Some((left, _)) = fetch_num(&data, row, colnum - 1) {
+            if let Some((left, _)) = fetch_num(data, row, colnum - 1) {
                 numbers.push(left);
             }
         }
         if colnum + 1 < data[row].len() {
-            if let Some((right, _)) = fetch_num(&data, row, colnum + 1) {
+            if let Some((right, _)) = fetch_num(data, row, colnum + 1) {
                 numbers.push(right);
             }
         }
@@ -68,14 +68,14 @@ fn calc_serial_number(path: &Path) -> u32 {
     result
 }
 
-fn fetch_num(data: &Vec<&str>, rownum: usize, col: usize) -> Option<(u32, usize)> {
+fn fetch_num(data: &[&str], rownum: usize, col: usize) -> Option<(u32, usize)> {
     let row = data[rownum].as_bytes();
     if !row[col].is_ascii_digit() { return None; }
     let mut lcol = col;
     while lcol > 0 && row[lcol - 1].is_ascii_digit() { lcol -= 1; }
     let mut result = 0u32;
     while lcol < row.len() && row[lcol].is_ascii_digit() {
-        result = result * 10 + (row[lcol] - '0' as u8) as u32;
+        result = result * 10 + (row[lcol] - b'0') as u32;
         lcol += 1;
     }
     Some((result, lcol))
