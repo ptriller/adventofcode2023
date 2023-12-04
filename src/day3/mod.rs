@@ -112,13 +112,13 @@ mod tests {
     fn do_problem1() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day3/input.txt");
-        println!("Day 3, Problem 1: Valid games: {}", calc_serial_number(test_data.as_path()));
+        println!("Day 3, Problem 1: Serialnumbers: {}", calc_serial_number(test_data.as_path()));
     }
 
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day3/input.txt");
-        println!("Day 3, Problem 1: Valid games: {}", calc_gear_ratios(test_data.as_path()));
+        println!("Day 3, Problem 1: Gear Ratios: {}", calc_gear_ratios(test_data.as_path()));
     }
 }
