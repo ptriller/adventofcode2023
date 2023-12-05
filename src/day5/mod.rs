@@ -215,6 +215,6 @@ mod tests {
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day5/input.txt");
-        println!("Day 5, Problem 1: First Location: {}", find_real_first_location(test_data.as_path()));
+        println!("Day 5, Problem 2: First Location: {}", find_real_first_location(test_data.as_path()));
     }
 }
