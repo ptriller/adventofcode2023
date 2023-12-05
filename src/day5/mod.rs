@@ -20,9 +20,8 @@ struct Section {
 
 #[derive(Debug)]
 struct Mapping {
-    source: u64,
-    target: u64,
-    range: u64,
+    source: Range<u64>,
+    target: Range<u64>,
 }
 
 fn find_first_location(path: &Path) -> u64 {
@@ -44,37 +43,53 @@ fn find_first_location(path: &Path) -> u64 {
 
 fn find_real_first_location(path: &Path) -> u64 {
     let almanac = Almanac::parse(path);
-    let mut result = u64::MAX;
-    let mut ranges: Vec<Range<u64>> = vec![];
-
-    for seed in almanac.seeds {
-        let mut vtype = "seed";
-        let mut value = seed;
-        while vtype != "location" {
-            let maps = almanac.mappings.get(vtype).unwrap();
-            value = maps.map(value);
-            vtype = &maps.ttype;
+    let mut vtype = "seed";
+    let mut ranges: Vec<Range<u64>> = almanac.seeds
+        .chunks(2)
+        .map(|c| c[0]..(c[0] + c[1])).collect();
+    while vtype != "location" {
+        let mut new_ranges = vec![];
+        let maps = almanac.mappings.get(vtype).unwrap();
+        'next_range:
+        while let Some(brange) = ranges.pop() {
+            let mut range = brange;
+            for mapping in &maps.maps {
+                let (b, c, a) =
+                    intersect_ranges(&range, &mapping.source);
+                if let Some(r) = b {
+                    assert!(r.end >= r.start);
+                    new_ranges.push(r);
+                }
+                if let Some(r) = c {
+                    assert!(r.end >= r.start);
+                    new_ranges.push(r.start + mapping.target.start - mapping.source.start..
+                        r.end + mapping.target.start - mapping.source.start
+                    );
+                }
+                if let Some(r) = a {
+                    assert!(r.end >= r.start);
+                    range = r;
+                } else {
+                    continue 'next_range;
+                }
+            }
+            new_ranges.push(range);
         }
-        result = result.min(value);
+        ranges = new_ranges;
+        vtype = &maps.ttype;
     }
-    result
+    ranges.iter().map(|r| r.start).min().unwrap()
 }
 
 impl Section {
     fn map(&self, input: u64) -> u64 {
         for ref map in &self.maps {
-            if input >= map.source && input < map.source + map.range {
-                let result = input - map.source + map.target;
+            if input >= map.source.start && input < map.source.end {
+                let result = input + map.target.start - map.source.start;
                 return result;
             }
         }
         input
-    }
-
-    fn range_map(&self, input: Range<u64>) -> Vec<(u64, u64)> {
-        let mut result = vec![];
-
-        result
     }
 }
 
@@ -109,15 +124,14 @@ fn parse_section(reader: &mut Peekable<Lines>) -> Section {
         if line.is_empty() {
             break;
         }
-        maps.sort_unstable_by_key(|m: &Mapping| m.source);
         let numbers = number_list(line);
         assert_eq!(3, numbers.len());
         maps.push(Mapping {
-            target: numbers[0],
-            source: numbers[1],
-            range: numbers[2],
+            source: numbers[1]..(numbers[1] + numbers[2]),
+            target: numbers[0]..(numbers[0] + numbers[2]),
         });
     }
+    maps.sort_unstable_by_key(|m: &Mapping| m.source.start);
     Section {
         stype,
         ttype,
@@ -134,11 +148,61 @@ fn number_list(str: &str) -> Vec<u64> {
 }
 
 
+fn intersect_ranges(input: &Range<u64>, base: &Range<u64>) -> (Option<Range<u64>>,
+                                                               Option<Range<u64>>,
+                                                               Option<Range<u64>>) {
+    // Before
+    if input.end <= base.start {
+        return (Some(input.clone()), None, None);
+    }
+    // Before and in
+    if input.start <= base.start
+        && input.end > base.start
+        && input.end <= base.end {
+        return (Some(input.start..base.start).filter(|x| x.end > x.start),
+                Some(base.start..input.end).filter(|x| x.end > x.start),
+                None
+        );
+    }
+    // Before and over
+    if input.start <= base.start && input.end > base.end {
+        return (Some(input.start..base.start).filter(|x| x.end > x.start),
+                Some(base.start..input.end).filter(|x| x.end > x.start),
+                Some(base.end..input.end).filter(|x| x.end > x.start)
+        );
+    }
+    // In and in
+    if input.start >= base.start
+        && input.start < base.end
+        && input.end <= base.end {
+        return (
+            None,
+            Some(input.clone()),
+            None
+        );
+    }
+    // In and over
+    if input.start >= base.start
+        && input.start < base.end
+        && input.end > base.end {
+        return (
+            None,
+            Some(input.start..base.end).filter(|x| x.end > x.start),
+            Some(base.end..input.end).filter(|x| x.end > x.start)
+        );
+    }
+    // After
+    if input.start >= base.end {
+        return (None, None, Some(input.clone()));
+    }
+    panic!("Seems I missed a case")
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
 
-    use crate::day5::find_first_location;
+    use crate::day5::{find_first_location, find_real_first_location};
 
     #[test]
     fn do_problem1() {
@@ -150,7 +214,7 @@ mod tests {
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        test_data.push("resources/day4/testinput.txt");
-        println!("Day 5, Problem 1: First Location: {}", 0);
+        test_data.push("resources/day5/input.txt");
+        println!("Day 5, Problem 1: First Location: {}", find_real_first_location(test_data.as_path()));
     }
 }
