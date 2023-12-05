@@ -34,8 +34,7 @@ fn calc_scratchcards(path: &Path) -> u32 {
             }
         }
     }
-    let result = count.iter().sum();
-    result
+    count.iter().sum()
 }
 
 
