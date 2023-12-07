@@ -22,8 +22,7 @@ fn calc_range(time: u64, record: u64) -> u64 {
     let root = f64::sqrt((time * time - 4 * record) as f64);
     let lower = (0.5f64 * (time as f64 - root) + 1f64).floor() as u64;
     let upper = (0.5f64 * (root + time as f64) - 1f64).ceil() as u64;
-    let range = upper - lower + 1;
-    range
+    upper - lower + 1
 }
 
 fn calc_real_time(path: &Path) -> u64 {

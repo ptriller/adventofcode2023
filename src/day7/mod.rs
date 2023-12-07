@@ -41,45 +41,26 @@ fn calc_winnings_new(path: &Path) -> u32 {
 
 lazy_static! {
 static ref CARD_ORDER: HashMap<char, u32> = HashMap::from([
-    ('A', 14),
-    ('K', 13),
-    ('Q', 12),
-    ('J', 11),
-    ('T', 10),
-    ('9', 9),
-    ('8', 8),
-    ('7', 7),
-    ('6', 6),
-    ('5', 5),
-    ('4', 4),
-    ('3', 3),
-    ('2', 2)
-]);
+('A', 14), ('K', 13), ('Q', 12),
+('J', 11), ('T', 10), ('9', 9),
+('8', 8), ('7', 7), ('6', 6),
+('5', 5), ('4', 4), ('3', 3),
+('2', 2)]);
+
 static ref NEW_CARD_ORDER: HashMap<char, u32> = HashMap::from([
-    ('A', 14),
-    ('K', 13),
-    ('Q', 12),
-    ('T', 10),
-    ('9', 9),
-    ('8', 8),
-    ('7', 7),
-    ('6', 6),
-    ('5', 5),
-    ('4', 4),
-    ('3', 3),
-    ('2', 2),
-    ('J', 1),
-]);
+('A', 14), ('K', 13), ('Q', 12),
+('T', 10), ('9', 9), ('8', 8),
+('7', 7), ('6', 6), ('5', 5),
+('4', 4), ('3', 3), ('2', 2),
+('J', 1), ]);
 }
 
-
-
 fn relabel_card(card: &str) -> Vec<u32> {
-    card.chars().map(|c| CARD_ORDER.get(&c).unwrap()).map(|x| *x).collect()
+    card.chars().map(|c| CARD_ORDER.get(&c).unwrap()).copied().collect()
 }
 
 fn relabel_card_new(card: &str) -> Vec<u32> {
-    card.chars().map(|c| NEW_CARD_ORDER.get(&c).unwrap()).map(|x| *x).collect()
+    card.chars().map(|c| NEW_CARD_ORDER.get(&c).unwrap()).copied().collect()
 }
 
 
@@ -89,7 +70,7 @@ fn categorize_new(cards: &str) -> u32 {
         map.entry(c).and_modify(|d| *d += 1u32).or_insert(1);
     }
     let jokers = cards.chars().filter(|c| *c == 'J').count() as u32;
-    let mut val: Vec<u32> = map.values().map(|x| *x).collect();
+    let mut val: Vec<u32> = map.values().copied().collect();
     val.sort_by(|a, b| b.cmp(a));
     if jokers == 5 || val[0] + jokers >= 5 {
         return 6;
@@ -110,7 +91,7 @@ fn categorize_new(cards: &str) -> u32 {
         return 1;
     }
     assert_eq!(5, val.len());
-    return 0;
+    0
 }
 
 
@@ -119,7 +100,7 @@ fn categorize(cards: &str) -> u32 {
     for c in cards.chars() {
         map.entry(c).and_modify(|d| *d += 1u32).or_insert(1);
     }
-    let mut val: Vec<u32> = map.values().map(|x| *x).collect();
+    let mut val: Vec<u32> = map.values().copied().collect();
     val.sort_by(|a, b| b.cmp(a));
     if val[0] == 5 {
         return 6;
@@ -140,7 +121,7 @@ fn categorize(cards: &str) -> u32 {
         return 1;
     }
     assert_eq!(5, val.len());
-    return 0;
+    0
 }
 
 

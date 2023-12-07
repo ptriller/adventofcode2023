@@ -83,7 +83,7 @@ fn find_real_first_location(path: &Path) -> u64 {
 
 impl Section {
     fn map(&self, input: u64) -> u64 {
-        for ref map in &self.maps {
+        for map in &self.maps {
             if input >= map.source.start && input < map.source.end {
                 let result = input + map.target.start - map.source.start;
                 return result;
@@ -96,7 +96,7 @@ impl Section {
 impl Almanac {
     fn parse(path: &Path) -> Almanac {
         let data = read_to_string(path).unwrap();
-        let mut reader = data.lines().into_iter().peekable();
+        let mut reader = data.lines().peekable();
         let seed_line = reader.next().unwrap();
         assert!(seed_line.starts_with("seeds:"));
         let seeds = number_list(&seed_line[6..]);
@@ -120,7 +120,7 @@ fn parse_section(reader: &mut Peekable<Lines>) -> Section {
     let stype = names.next().unwrap().to_string();
     let ttype = names.next().unwrap().to_string();
     let mut maps = vec![];
-    while let Some(line) = reader.next() {
+    for line in reader.by_ref() {
         if line.is_empty() {
             break;
         }
@@ -147,10 +147,9 @@ fn number_list(str: &str) -> Vec<u64> {
         .collect()
 }
 
+type RangeOptionTouple = (Option<Range<u64>>, Option<Range<u64>>, Option<Range<u64>>);
 
-fn intersect_ranges(input: &Range<u64>, base: &Range<u64>) -> (Option<Range<u64>>,
-                                                               Option<Range<u64>>,
-                                                               Option<Range<u64>>) {
+fn intersect_ranges(input: &Range<u64>, base: &Range<u64>) -> RangeOptionTouple {
     // Before
     if input.end <= base.start {
         return (Some(input.clone()), None, None);
