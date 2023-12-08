@@ -135,13 +135,13 @@ mod tests {
     fn do_problem1() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day7/input.txt");
-        println!("Day 7, Problem 1: : Winnings {}", calc_winnings(test_data.as_path()));
+        println!("Day 7, Problem 1: Winnings {}", calc_winnings(test_data.as_path()));
     }
 
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day7/input.txt");
-        println!("Day 6, Problem 2: Winnings: {}", calc_winnings_new(test_data.as_path()));
+        println!("Day 7, Problem 2: Winnings: {}", calc_winnings_new(test_data.as_path()));
     }
 }
