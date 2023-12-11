@@ -25,17 +25,15 @@ fn trace_area(path: &Path) -> u32 {
     for row in 0..grid.len() {
         let mut inside = false;
         for col in 0..grid[row].len() {
-            if !inside && ['S', '|', 'J', '7'].contains(&ngrid[row][col]) {
+            if ['S', '|', 'J', 'L'].contains(&ngrid[row][col]) {
                 inside = !inside;
+                continue;
             }
-            if inside && ['S', '|', 'F', 'L'].contains(&ngrid[row][col]) {
-                inside = !inside;
-            }
-            if grid[row][col] == '.' && inside {
+            if ngrid[row][col] == '.' && inside {
                 grid[row][col] = 'I';
                 area += 1;
             }
-            if grid[row][col] == '.' && !inside {
+            if ngrid[row][col] == '.' && !inside {
                 grid[row][col] = 'O';
             }
         }
@@ -120,7 +118,7 @@ mod tests {
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        test_data.push("resources/day10/testinput.txt");
+        test_data.push("resources/day10/input.txt");
         println!("Day 9, Problem 2: Area: {}", trace_area(test_data.as_path()));
     }
 }
