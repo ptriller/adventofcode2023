@@ -10,7 +10,7 @@ fn trace_area(path: &Path) -> u32 {
         for (row, col) in &frontier {
             ngrid[*row][*col] = grid[*row][*col];
         }
-        let new_frontier = scan_frontier(&mut grid, &mut frontier);
+        let new_frontier = scan_frontier(&mut grid, &frontier);
         frontier = new_frontier;
     }
     for line in &ngrid {
@@ -50,7 +50,7 @@ fn trace_path(path: &Path) -> u32 {
     let mut frontier = vec![find_start(&grid)];
     let mut distance = 0;
     while !frontier.is_empty() {
-        let new_frontier = scan_frontier(&mut grid, &mut frontier);
+        let new_frontier = scan_frontier(&mut grid, &frontier);
         distance += 1;
         frontier = new_frontier;
     }
@@ -93,7 +93,7 @@ fn scan_frontier(grid: &mut Vec<Vec<char>>, frontier: &Vec<(usize, usize)>) -> V
     new_frontier
 }
 
-fn find_start(data: &Vec<Vec<char>>) -> (usize, usize) {
+fn find_start(data: &[Vec<char>]) -> (usize, usize) {
     for (row, line) in data.iter().enumerate() {
         for (col, chr) in line.iter().enumerate() {
             if *chr == 'S' { return (row, col); }
@@ -112,13 +112,13 @@ mod tests {
     fn do_problem1() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day10/input.txt");
-        println!("Day 9, Problem 1: Distance {}", trace_path(test_data.as_path()));
+        println!("Day 10, Problem 1: Distance {}", trace_path(test_data.as_path()));
     }
 
     #[test]
     fn do_problem2() {
         let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         test_data.push("resources/day10/input.txt");
-        println!("Day 9, Problem 2: Area: {}", trace_area(test_data.as_path()));
+        println!("Day 10, Problem 2: Area: {}", trace_area(test_data.as_path()));
     }
 }
