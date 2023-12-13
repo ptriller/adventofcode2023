@@ -20,6 +20,24 @@ pub(crate) fn calc_permutations(path: &Path) -> u64 {
     result
 }
 
+pub(crate) fn calc_chunks(path: &Path) -> u32 {
+    let data = read_to_string(path).unwrap();
+    let mut springs = vec![];
+    for line in data.lines() {
+        let mut split = line.split(' ');
+        let left: Vec<char> = split.next().unwrap().chars().collect();
+        let right: Vec<u32> = split.next().unwrap().split(',')
+            .map(|c| c.parse().unwrap()).collect();
+        springs.push((left, right));
+    }
+    let mut result = 0;
+    for (left, right) in springs {
+        let perm = check_permutations(&left, &right);
+        result += perm;
+    }
+    result
+}
+
 
 pub(crate) fn calc_unfolded_permutations(path: &Path) -> u64 {
     let data = read_to_string(path).unwrap();
