@@ -1,32 +1,33 @@
+use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::path::Path;
 
-pub(crate) fn calc_permutations(path: &Path) -> u32 {
+pub(crate) fn calc_permutations(path: &Path) -> u64 {
     let data = read_to_string(path).unwrap();
     let mut springs = vec![];
     for line in data.lines() {
         let mut split = line.split(' ');
         let left: Vec<char> = split.next().unwrap().chars().collect();
-        let right: Vec<u32> = split.next().unwrap().split(',')
+        let right: Vec<u64> = split.next().unwrap().split(',')
             .map(|c| c.parse().unwrap()).collect();
         springs.push((left, right));
     }
     let mut result = 0;
     for (left, right) in springs {
-        let perm = check_permutations(&left, &right);
+        let perm = check_permutations(&left, &right, &mut HashMap::new());
         result += perm;
     }
     result
 }
 
 
-pub(crate) fn calc_unfolded_permutations(path: &Path) -> u32 {
+pub(crate) fn calc_unfolded_permutations(path: &Path) -> u64 {
     let data = read_to_string(path).unwrap();
     let mut springs = vec![];
     for line in data.lines() {
         let mut split = line.split(' ');
         let left: Vec<char> = split.next().unwrap().chars().collect();
-        let right: Vec<u32> = split.next().unwrap().split(',')
+        let right: Vec<u64> = split.next().unwrap().split(',')
             .map(|c| c.parse().unwrap()).collect();
         let (mut rleft, mut rright) = (vec![], vec![]);
         for i in 0..5 {
@@ -39,15 +40,17 @@ pub(crate) fn calc_unfolded_permutations(path: &Path) -> u32 {
         springs.push((rleft, rright));
     }
     let mut result = 0;
-    for (i, (left, right)) in springs.iter().enumerate() {
-        let perm = check_permutations(&left, &right);
-        eprintln!("line {i} {perm}");
+    for (left, right) in springs.iter() {
+        let perm = check_permutations(&left, &right, &mut HashMap::new());
         result += perm;
     }
     result
 }
 
-fn check_permutations(left: &[char], right: &[u32]) -> u32 {
+fn check_permutations(left: &[char], right: &[u64], cache: &mut HashMap<(usize, usize), u64>) -> u64 {
+    if let Some(perm) = cache.get(&(left.len(), right.len())) {
+        return *perm;
+    }
     if right.is_empty() {
         return if left.iter().all(|c| *c != '#') { 1 } else { 0 };
     }
@@ -56,7 +59,7 @@ fn check_permutations(left: &[char], right: &[u32]) -> u32 {
     let mut permutations = 0;
     for i in 0..=(left.len() - next) {
         let slice = &left[i..];
-        let scount = right.iter().sum::<u32>() as usize;
+        let scount = right.iter().sum::<u64>() as usize;
         if slice.len() < scount + right.len() - 1 ||
             slice.iter().filter(|c| **c != '.').count() < scount ||
             slice.iter().filter(|c| **c == '#').count() > scount
@@ -69,11 +72,12 @@ fn check_permutations(left: &[char], right: &[u32]) -> u32 {
                 break;
             }
             if slice[next] != '#' {
-                permutations += check_permutations(&slice[(1 + next)..], &right[1..])
+                permutations += check_permutations(&slice[(1 + next)..], &right[1..], cache);
             }
         }
         if slice[0] == '#' { break; }
     }
+    cache.insert((left.len(), right.len()), permutations);
     permutations
 }
 
