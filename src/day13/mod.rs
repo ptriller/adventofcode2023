@@ -14,7 +14,8 @@ fn calc_mirror_data(path: &Path, error: usize) -> u32 {
         }
     }
     zones.push(zone);
-    zones.iter().map(|a| calc_zone_mirror(a, error)).sum()
+    zones.iter().map(|a
+    | calc_zone_mirror(a, error)).sum()
 }
 
 fn calc_zone_mirror(zone: &[&str], error: usize) -> u32 {
@@ -54,7 +55,7 @@ fn check_mirror_row(row: usize, zone: &[&str], error: usize) -> bool {
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
-    use crate::day13::{calc_mirror_data};
+    use crate::day13::calc_mirror_data;
 
     #[test]
     fn do_problem1() {

@@ -5,7 +5,8 @@ fn trace_area(path: &Path) -> u32 {
     let data = read_to_string(path).unwrap();
     let mut grid: Vec<Vec<char>> = data.lines().map(|l| l.chars().collect()).collect();
     let mut ngrid = vec![vec!['.'; grid[0].len()]; grid.len()];
-    let mut frontier = vec![find_start(&grid)];
+    let start = find_start(&grid);
+    let mut frontier = vec![start];
     while !frontier.is_empty() {
         for (row, col) in &frontier {
             ngrid[*row][*col] = grid[*row][*col];
@@ -13,19 +14,15 @@ fn trace_area(path: &Path) -> u32 {
         let new_frontier = scan_frontier(&mut grid, &frontier);
         frontier = new_frontier;
     }
-    for line in &ngrid {
-        println!("{:?}", line);
+    if ['|', 'F', '7' ].contains(&ngrid[start.0-1][start.1]) {
+        ngrid[start.0][start.1] = '|';
     }
-    // FLood fill all outsides
-    // count pipes in ngrid from left to right, if you find an "outside" that has not been filled
-    // Flood fill ...
-    // The rest is inside
 
     let mut area = 0;
     for row in 0..grid.len() {
         let mut inside = false;
         for col in 0..grid[row].len() {
-            if ['S', '|', 'J', 'L'].contains(&ngrid[row][col]) {
+            if [ '|', 'J', 'L'].contains(&ngrid[row][col]) {
                 inside = !inside;
                 continue;
             }
@@ -37,9 +34,6 @@ fn trace_area(path: &Path) -> u32 {
                 grid[row][col] = 'O';
             }
         }
-    }
-    for line in &grid {
-        println!("{:?}", line);
     }
     area
 }
@@ -53,9 +47,6 @@ fn trace_path(path: &Path) -> u32 {
         let new_frontier = scan_frontier(&mut grid, &frontier);
         distance += 1;
         frontier = new_frontier;
-    }
-    for line in grid {
-        println!("{:?}", line);
     }
     distance - 1
 }

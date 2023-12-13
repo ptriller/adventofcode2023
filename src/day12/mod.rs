@@ -20,24 +20,6 @@ pub(crate) fn calc_permutations(path: &Path) -> u64 {
     result
 }
 
-pub(crate) fn calc_chunks(path: &Path) -> u32 {
-    let data = read_to_string(path).unwrap();
-    let mut springs = vec![];
-    for line in data.lines() {
-        let mut split = line.split(' ');
-        let left: Vec<char> = split.next().unwrap().chars().collect();
-        let right: Vec<u32> = split.next().unwrap().split(',')
-            .map(|c| c.parse().unwrap()).collect();
-        springs.push((left, right));
-    }
-    let mut result = 0;
-    for (left, right) in springs {
-        let perm = check_permutations(&left, &right);
-        result += perm;
-    }
-    result
-}
-
 
 pub(crate) fn calc_unfolded_permutations(path: &Path) -> u64 {
     let data = read_to_string(path).unwrap();
@@ -59,7 +41,7 @@ pub(crate) fn calc_unfolded_permutations(path: &Path) -> u64 {
     }
     let mut result = 0;
     for (left, right) in springs.iter() {
-        let perm = check_permutations(&left, &right, &mut HashMap::new());
+        let perm = check_permutations(left, right, &mut HashMap::new());
         result += perm;
     }
     result
@@ -83,7 +65,7 @@ fn check_permutations(left: &[char], right: &[u64], cache: &mut HashMap<(usize, 
             slice.iter().filter(|c| **c == '#').count() > scount
         { break; }
         if slice[0] == '.' { continue; }
-        if (&slice[..next]).iter().all(|c| *c != '.') {
+        if (slice[..next]).iter().all(|c| *c != '.') {
             // Done and at the end of the string
             if slice.len() == next {
                 if right.len() == 1 { permutations += 1; }
