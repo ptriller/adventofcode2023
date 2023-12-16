@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fs::read_to_string;
 use std::path::Path;
 
@@ -11,7 +11,7 @@ fn calc_extended_load(path: &Path) -> u64 {
     let modu = remainer % length;
     println!("Modulo {modu}");
     let mut data = load_board(path);
-    for _ in 0.. from+modu {
+    for _ in 0..from + modu {
         tilt_north(&mut data);
         tilt_west(&mut data);
         tilt_south(&mut data);
