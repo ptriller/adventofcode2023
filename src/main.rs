@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use std::path::PathBuf;
 
 mod day1;
 mod day2;
@@ -18,12 +17,6 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
 
-fn main() {
-
-    println!("Hello, world!");
-    let mut test_data = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    test_data.push("resources/day12/input.txt");
-    println!("Day 11, Problem 1: Permutations {}", crate::day12::calc_unfolded_permutations(test_data.as_path()));
-
-}
+fn main() {}
